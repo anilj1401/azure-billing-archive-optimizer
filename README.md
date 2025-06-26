@@ -8,10 +8,9 @@ Cold Tier: Migrate older records to Azure Blob Storage (cheaper), accessible on 
 
 API Facade Layer: Add an internal abstraction (read-through cache pattern) to fetch from blob storage when a record is missing in Cosmos DB.
 
-📊 Updated Architecture Diagram
-pgsql
-Copy
-Edit
+Updated Architecture Diagram
+<span>
+
                    +----------------------+
                    |   API / Function App |
                    +----------------------+
@@ -25,7 +24,8 @@ Edit
             | Cosmos DB     |   | Azure Blob Storage   |
             | (Hot Data)    |   | (Archived JSON Blobs)|
             +---------------+   +----------------------+
-⚙️ Key Components
+            
+<b> Key Components</b>
 Component	Role
 Cosmos DB	Stores recent billing data (last 3 months)
 Azure Blob Storage	Stores archived JSON blobs (older than 3 months)
@@ -33,19 +33,18 @@ Azure Functions (Timer Trigger)	Migrates old data from Cosmos DB to Blob
 Read API Logic	Tries Cosmos DB → Fallback to Blob on miss
 Write API Logic	Unchanged
 
-🚀 Implementation Steps
+ <b>Implementation Steps</b>
+ 
 Step 1: Create Azure Blob Container
-bash
-Copy
-Edit
+
 az storage account create --name billingarchiveacct --resource-group myRG --location eastus --sku Standard_LRS
 az storage container create --account-name billingarchiveacct --name archived-billing-records --public-access off
+
 Step 2: Timer-Triggered Azure Function to Archive Old Records
 Pseudocode:
 
 csharp
-Copy
-Edit
+
 public async Task RunAsync()
 {
     var cutoffDate = DateTime.UtcNow.AddMonths(-3);
@@ -63,9 +62,6 @@ This runs once daily using Azure Timer Function.
 Step 3: Update Read Logic (Facade Layer)
 Pseudocode:
 
-csharp
-Copy
-Edit
 public async Task<BillRecord> GetBillingRecordAsync(string id)
 {
     var record = await cosmosDb.TryGet<BillRecord>(id);
@@ -76,12 +72,12 @@ public async Task<BillRecord> GetBillingRecordAsync(string id)
 }
 This keeps API unchanged but adds a fallback logic internally.
 
-Step 4: Monitoring and Alerts
+<b>Step 4: Monitoring and Alerts</b>
 Add Application Insights and Azure Monitor alerts for failed archivals.
 
 Monitor blob access metrics for rare access.
 
-💰 Cost Optimization Breakdown
+Cost Optimization Breakdown
 Component	Optimization
 Cosmos DB	Reduced RU/s and storage costs
 Blob Storage	Stored in Cool/Archive tier for 90%+ cost reduction
@@ -92,13 +88,9 @@ Shadow traffic test: log missing Cosmos lookups and ensure correct retrieval fro
 
 Canary rollout of archival for a subset of older data.
 
-✅ Solution Benefits
-✅ No API Contract Changes
-
-✅ No Data Loss
-
-✅ Zero Downtime
-
-✅ Simplified Archival
-
-✅ Cost Reduction ~70%+
+<b>Solution Benefits</b>
+No API Contract Changes
+No Data Loss
+Zero Downtime
+Simplified Archival
+Cost Reduction ~70%+
