@@ -83,14 +83,16 @@ Cosmos DB	Reduced RU/s and storage costs
 Blob Storage	Stored in Cool/Archive tier for 90%+ cost reduction
 Functions	Serverless, run only during off-peak
 
-🧪 Testing Strategy
+ <b>Testing Strategy</b>
+ </br>
 Shadow traffic test: log missing Cosmos lookups and ensure correct retrieval from Blob.
 
 Canary rollout of archival for a subset of older data.
 
 <b>Solution Benefits</b>
-No API Contract Changes
-No Data Loss
-Zero Downtime
-Simplified Archival
-Cost Reduction ~70%+
+<ul> <li>No API Contract Changes</li>
+ <li>No Data Loss</li>
+ <li>Zero Downtime</li>
+ <li>Simplified Archival</li>
+ <li>Cost Reduction ~70%+</li>
+</ul>
